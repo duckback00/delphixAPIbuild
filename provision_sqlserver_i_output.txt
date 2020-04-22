@@ -1,0 +1,96 @@
+
+PS C:\temp\API_Powershell_Invoke_Rest> C:\temp\API_Powershell_Invoke_Rest\provision_sqlserver_i.ps1
+Authenticating on http://3.135.185.65/resources/json/delphix ... 
+
+Login Successful ...
+API Version: 1102 
+--------------------------------------
+dSource or VDB Source: [copy-n-paste]
+delphix_demo
+Please Enter dSource or VDB Source (case sensitive): delphix_demo
+container reference: MSSQL_DB_CONTAINER-166
+---------------------------------
+Please Enter New VDB Name (case sensitive): Vdelphix_demo
+New VDB Name: Vdelphix_demo
+--------------------------------------
+Delphix Target Group/Folder: [copy-n-paste]
+Postgres
+MySQL
+ELK
+ELK_Binaries
+SQL Server
+Please Enter Delphix Target Group/Folder (case sensitive): SQL Server
+group reference: GROUP-19
+--------------------------------------
+Target Environment: [copy-n-paste]
+Windows
+Please Enter Target Environment (case sensitive): Windows
+environment reference: WINDOWS_HOST_ENVIRONMENT-15
+--------------------------------------
+Target SQL Server Instance: [copy-n-paste]
+Unstructured Files
+MSSQLSERVER
+Please Enter Target SQL Server Instance (case sensitive): MSSQLSERVER
+repository/instance reference: MSSQL_INSTANCE-5
+JSON: {
+    "type": "MSSqlProvisionParameters",
+    "container": {
+        "type": "MSSqlDatabaseContainer",
+        "name": "Vdelphix_demo",
+        "group": "GROUP-19",
+        "sourcingPolicy": {
+            "type": "SourcingPolicy",
+            "loadFromBackup": false,
+            "logsyncEnabled": false
+        },
+        "validatedSyncMode": "TRANSACTION_LOG"
+    },
+    "source": {
+        "type": "MSSqlVirtualSource", 
+        "allowAutoVDBRestartOnHostReboot": false, 
+        "operations": {
+            "type": "VirtualSourceOperations",
+            "configureClone": [],
+            "postRefresh": [],
+            "postRollback": [],
+            "postSnapshot": [],
+            "preRefresh": [],
+            "preSnapshot": []
+        }
+    },
+    "sourceConfig": {
+        "type": "MSSqlSIConfig",
+        "linkingEnabled": false,
+        "repository": "MSSQL_INSTANCE-5",
+        "databaseName": "Vdelphix_demo",
+        "recoveryModel": "SIMPLE",
+        "instance": {
+            "type": "MSSqlInstanceConfig",
+            "host": "WINDOWS_HOST_ENVIRONMENT-15"
+        }
+    },
+    "timeflowPointParameters": {
+        "type": "TimeflowPointSemantic",
+        "container": "MSSQL_DB_CONTAINER-166",
+        "location": "LATEST_SNAPSHOT"
+    }
+}
+database provision API Results: @{type=OKResult; status=OK; result=MSSQL_DB_CONTAINER-194; job=JOB-1849; action=ACTION-244563}
+Job # JOB-1849
+jobState  RUNNING
+percentComplete 0.0
+***** waiting for status *****
+Current status as of 01/14/2020 20:05:29 : RUNNING : 0.0% Completed
+Current status as of 01/14/2020 20:05:39 : RUNNING : 3.0% Completed
+Current status as of 01/14/2020 20:05:49 : RUNNING : 11.0% Completed
+Current status as of 01/14/2020 20:05:59 : RUNNING : 20.0% Completed
+Current status as of 01/14/2020 20:06:09 : RUNNING : 20.0% Completed
+Current status as of 01/14/2020 20:06:19 : RUNNING : 42.0% Completed
+Current status as of 01/14/2020 20:06:29 : RUNNING : 42.0% Completed
+Current status as of 01/14/2020 20:06:39 : RUNNING : 75.0% Completed
+Current status as of 01/14/2020 20:06:50 : RUNNING : 75.0% Completed
+Current status as of 01/14/2020 20:07:00 : RUNNING : 75.0% Completed
+Current status as of 01/14/2020 20:07:10 : RUNNING : 75.0% Completed
+JOB-1849 COMPLETED Successfully.
+ 
+Done ...

@@ -1,0 +1,590 @@
+
+Invoke-WebRequest -Uri https://aka.ms/installazurecliwindows -OutFile .\AzureCLI.msi; Start-Process msiexec.exe -Wait -ArgumentList '/I AzureCLI.msi /quiet'; rm .\AzureCLI.msi
+
+
+PS C:\Users\bitterman> az login
+az : You have logged in. Now let us find all the subscriptions to which you have access...
+At line:1 char:1
++ az login
++ ~~~~~~~~
+    + CategoryInfo          : NotSpecified: (You have logged... have access...:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[
+  {
+    "cloudName": "AzureCloud",
+    "homeTenantId": "07b57d1b-e372-4e81-aac8-13a92ba1c72a",
+    "id": "1505c25b-d63a-40d8-8b91-f9272afd9648",
+    "isDefault": true,
+    "managedByTenants": [],
+    "name": "Pay-As-You-Go",
+    "state": "Enabled",
+    "tenantId": "07b57d1b-e372-4e81-aac8-13a92ba1c72a",
+    "user": {
+      "name": "alan.bitterman@delphix.com",
+      "type": "user"
+    }
+  }
+]
+
+PS C:\Us
+
+PS C:\Users\bitterman> az vm image list
+az : You are viewing an offline list of images, use --all to retrieve an up-to-date list
+At line:1 char:1
++ az vm image list
++ ~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (You are viewing...up-to-date list:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[
+  {
+    "offer": "CentOS",
+    "publisher": "OpenLogic",
+    "sku": "7.5",
+    "urn": "OpenLogic:CentOS:7.5:latest",
+    "urnAlias": "CentOS",
+    "version": "latest"
+  },
+  {
+    "offer": "CoreOS",
+    "publisher": "CoreOS",
+    "sku": "Stable",
+    "urn": "CoreOS:CoreOS:Stable:latest",
+    "urnAlias": "CoreOS",
+    "version": "latest"
+  },
+  {
+    "offer": "debian-10",
+    "publisher": "Debian",
+    "sku": "10",
+    "urn": "Debian:debian-10:10:latest",
+    "urnAlias": "Debian",
+    "version": "latest"
+  },
+  {
+    "offer": "openSUSE-Leap",
+    "publisher": "SUSE",
+    "sku": "42.3",
+    "urn": "SUSE:openSUSE-Leap:42.3:latest",
+    "urnAlias": "openSUSE-Leap",
+    "version": "latest"
+  },
+  {
+    "offer": "RHEL",
+    "publisher": "RedHat",
+    "sku": "7-LVM",
+    "urn": "RedHat:RHEL:7-LVM:latest",
+    "urnAlias": "RHEL",
+    "version": "latest"
+  },
+  {
+    "offer": "SLES",
+    "publisher": "SUSE",
+    "sku": "15",
+    "urn": "SUSE:SLES:15:latest",
+    "urnAlias": "SLES",
+    "version": "latest"
+  },
+  {
+    "offer": "UbuntuServer",
+    "publisher": "Canonical",
+    "sku": "18.04-LTS",
+    "urn": "Canonical:UbuntuServer:18.04-LTS:latest",
+    "urnAlias": "UbuntuLTS",
+    "version": "latest"
+  },
+  {
+    "offer": "WindowsServer",
+    "publisher": "MicrosoftWindowsServer",
+    "sku": "2019-Datacenter",
+    "urn": "MicrosoftWindowsServer:WindowsServer:2019-Datacenter:latest",
+    "urnAlias": "Win2019Datacenter",
+    "version": "latest"
+  },
+  {
+    "offer": "WindowsServer",
+    "publisher": "MicrosoftWindowsServer",
+    "sku": "2016-Datacenter",
+    "urn": "MicrosoftWindowsServer:WindowsServer:2016-Datacenter:latest",
+    "urnAlias": "Win2016Datacenter",
+    "version": "latest"
+  },
+  {
+    "offer": "WindowsServer",
+    "publisher": "MicrosoftWindowsServer",
+    "sku": "2012-R2-Datacenter",
+    "urn": "MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:latest",
+    "urnAlias": "Win2012R2Datacenter",
+    "version": "latest"
+  },
+  {
+    "offer": "WindowsServer",
+    "publisher": "MicrosoftWindowsServer",
+    "sku": "2012-Datacenter",
+    "urn": "MicrosoftWindowsServer:WindowsServer:2012-Datacenter:latest",
+    "urnAlias": "Win2012Datacenter",
+    "version": "latest"
+  },
+  {
+    "offer": "WindowsServer",
+    "publisher": "MicrosoftWindowsServer",
+    "sku": "2008-R2-SP1",
+    "urn": "MicrosoftWindowsServer:WindowsServer:2008-R2-SP1:latest",
+    "urnAlias": "Win2008R2SP1",
+    "version": "latest"
+  }
+]
+
+
+az account list-locations
+...
+  {
+    "displayName": "East US",
+    "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/locations/eastus",
+    "latitude": "37.3719",
+    "longitude": "-79.8164",
+    "name": "eastus",
+    "subscriptionId": null
+  },
+  {
+    "displayName": "East US 2",
+    "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/locations/eastus2",
+    "latitude": "36.6681",
+    "longitude": "-78.3889",
+    "name": "eastus2",
+    "subscriptionId": null
+  },
+  {
+    "displayName": "West US",
+    "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/locations/westus",
+    "latitude": "37.783",
+    "longitude": "-122.417",
+    "name": "westus",
+    "subscriptionId": null
+  },
+  {
+    "displayName": "North Central US",
+    "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/locations/northcentralus",
+    "latitude": "41.8819",
+    "longitude": "-87.6278",
+    "name": "northcentralus",
+    "subscriptionId": null
+  },
+  {
+    "displayName": "South Central US",
+    "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/locations/southcentralus",
+    "latitude": "29.4167",
+    "longitude": "-98.5",
+    "name": "southcentralus",
+    "subscriptionId": null
+  },
+  {
+
+PS C:\Users\bitterman> 
+
+az vm image show
+az : usage error: --plan STRING --offer STRING --publish STRING --version STRING | --urn STRING
+
+
+
+#az group create --name TutorialResources --location eastus
+
+1505c25b-d63a-40d8-8b91-f9272afd9648
+# --public-ip-address "" 
+
+az vm create -n win2 -g alan_bitterman --image Win2012R2Datacenter --location eastus
+
+  "networkProfile": {
+    "networkInterfaces": [
+      {
+        "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Network/networkInterfaces/win1791",
+        "primary": null,
+        "resourceGroup": "alan_bitterman"
+      }
+    ]
+  },
+
+az vm create --resource-group alan_bitterman \
+  --name TutorialVM1 \
+  --image UbuntuLTS \
+  --generate-ssh-keys \
+  --output json \
+  --verbose 
+
+az vm create --resource-group alan_bitterman --name TutorialVM1 --image UbuntuLTS --generate-ssh-keys --output json --verbose 
+
+
+az : SSH key files 'C:\Users\bitterman\.ssh\id_rsa' and 'C:\Users\bitterman\.ssh\id_rsa.pub' 
+have been generated under ~/.ssh to allow SSH access to the VM. If using 
+machines without permanent storage, back up your keys to a safe location.
+At line:1 char:1
++ az vm create --resource-group alan_bitterman --name TutorialVM1 --ima ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (SSH key files '... safe location.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+{
+  "fqdns": "",
+  "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Compute/virtualMachines/TutorialVM1",
+  "location": "centralus",
+  "macAddress": "00-0D-3A-A4-FD-A6",
+  "powerState": "VM running",
+  "privateIpAddress": "10.0.1.5",
+  "publicIpAddress": "40.77.67.133",
+  "resourceGroup": "alan_bitterman",
+  "zones": ""
+}
+command ran in 35.730 seconds.
+
+use puttygen.exe to generate key then reset azure vm password with public key and username.
+the putty.exe using private key 
+
+az vm show --name win1 --resource-group alan_bitterman
+
+az vm show --name TutorialVM1 --resource-group alan_bitterman
+
+PS C:\Users\bitterman> az vm show --name TutorialVM1 --resource-group alan_bitterman
+
+{
+  "additionalCapabilities": null,
+  "availabilitySet": null,
+  "billingProfile": null,
+  "diagnosticsProfile": null,
+  "evictionPolicy": null,
+  "hardwareProfile": {
+    "vmSize": "Standard_DS1_v2"
+  },
+  "host": null,
+  "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Compute/virtualMachines/TutorialVM1",
+  "identity": null,
+  "instanceView": null,
+  "licenseType": null,
+  "location": "centralus",
+  "name": "TutorialVM1",
+  "networkProfile": {
+    "networkInterfaces": [
+      {
+        "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Network/networkInterfaces/TutorialVM1VMNic",
+        "primary": null,
+        "resourceGroup": "alan_bitterman"
+      }
+    ]
+  },
+  "osProfile": {
+    "adminPassword": null,
+    "adminUsername": "bitterman",
+    "allowExtensionOperations": true,
+    "computerName": "TutorialVM1",
+    "customData": null,
+    "linuxConfiguration": {
+      "disablePasswordAuthentication": true,
+      "provisionVmAgent": true,
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDsrdO+gIfacg/wypXGkFje3Ye1ljRiFvImDevF8z26/rNpqFV6urjMiz/BudsLyX1VuKOb5hYQbyf3xcJOOVKkXz2G4pGjeYisGC+5NzLTNE
+DOrTYpL5mDYCzOK6l2E+MpAYMXsKdTLRRwdAr0SatduU69zb+vO+3Wln3R2/4ZcNLTAcgaS3L9he9HKUEFG8KFpMqinUGmlhIUXpl+bu+gs9c4+RWNjTZgdsMUyvyYSaX3Ar8ECJjXhwCeJ8DRLBwQWqUlWao+iAntztEqZriJ
+nPfrwRKREQfIxNwx1MU029H3UbePg7NMRLxEsL8KwVUbEhjr6znN3CAAKKhc666b",
+            "path": "/home/bitterman/.ssh/authorized_keys"
+          }
+        ]
+      }
+    },
+    "requireGuestProvisionSignal": true,
+    "secrets": [],
+    "windowsConfiguration": null
+  },
+  "plan": null,
+  "priority": null,
+  "provisioningState": "Succeeded",
+  "proximityPlacementGroup": null,
+  "resourceGroup": "alan_bitterman",
+  "resources": [
+    {
+      "autoUpgradeMinorVersion": true,
+      "forceUpdateTag": null,
+      "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Compute/virtualMachines/TutorialVM1/extensions/enablevm
+access",
+      "instanceView": null,
+      "location": "centralus",
+      "name": "enablevmaccess",
+      "protectedSettings": null,
+      "provisioningState": "Succeeded",
+      "publisher": "Microsoft.OSTCExtensions",
+      "resourceGroup": "alan_bitterman",
+      "settings": {},
+      "tags": null,
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "typeHandlerVersion": "1.4",
+      "virtualMachineExtensionType": "VMAccessForLinux"
+    }
+  ],
+  "storageProfile": {
+    "dataDisks": [],
+    "imageReference": {
+      "exactVersion": "18.04.202004080",
+      "id": null,
+      "offer": "UbuntuServer",
+      "publisher": "Canonical",
+      "sku": "18.04-LTS",
+      "version": "latest"
+    },
+    "osDisk": {
+      "caching": "ReadWrite",
+      "createOption": "FromImage",
+      "diffDiskSettings": null,
+      "diskSizeGb": 30,
+      "encryptionSettings": null,
+      "image": null,
+      "managedDisk": {
+        "diskEncryptionSet": null,
+        "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/ALAN_BITTERMAN/providers/Microsoft.Compute/disks/TutorialVM1_disk1_fe927c39a3fd41b6997b5
+0dd2a2d22d7",
+        "resourceGroup": "ALAN_BITTERMAN",
+        "storageAccountType": "Premium_LRS"
+      },
+      "name": "TutorialVM1_disk1_fe927c39a3fd41b6997b50dd2a2d22d7",
+      "osType": "Linux",
+      "vhd": null,
+      "writeAcceleratorEnabled": null
+    }
+  },
+  "tags": {},
+  "type": "Microsoft.Compute/virtualMachines",
+  "virtualMachineScaleSet": null,
+  "vmId": "22a2f051-4235-4cae-a324-80e54cf397a4",
+  "zones": null
+}
+
+PS C:\Users\bitterman> az vm show --name win1 --resource-group alan_bitterman
+{
+  "additionalCapabilities": null,
+  "availabilitySet": null,
+  "billingProfile": null,
+  "diagnosticsProfile": null,
+  "evictionPolicy": null,
+  "hardwareProfile": {
+    "vmSize": "Standard_B2s"
+  },
+  "host": null,
+  "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Compute/virtualMachines/win1",
+  "identity": null,
+  "instanceView": null,
+  "licenseType": null,
+  "location": "eastus",
+  "name": "win1",
+  "networkProfile": {
+    "networkInterfaces": [
+      {
+        "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Network/networkInterfaces/win1791",
+        "primary": null,
+        "resourceGroup": "alan_bitterman"
+      }
+    ]
+  },
+  "osProfile": {
+    "adminPassword": null,
+    "adminUsername": "bitterman",
+    "allowExtensionOperations": null,
+    "computerName": "win1",
+    "customData": null,
+    "linuxConfiguration": null,
+    "requireGuestProvisionSignal": null,
+    "secrets": [],
+    "windowsConfiguration": {
+      "additionalUnattendContent": null,
+      "enableAutomaticUpdates": true,
+      "provisionVmAgent": true,
+      "timeZone": null,
+      "winRm": null
+    }
+  },
+  "plan": null,
+  "priority": null,
+  "provisioningState": "Succeeded",
+  "proximityPlacementGroup": null,
+  "resourceGroup": "alan_bitterman",
+  "resources": [
+    {
+      "autoUpgradeMinorVersion": true,
+      "forceUpdateTag": null,
+      "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Compute/virtualMachines/win1/extensions/enablevmaccess"
+,
+      "instanceView": null,
+      "location": "eastus",
+      "name": "enablevmaccess",
+      "protectedSettings": null,
+      "provisioningState": "Succeeded",
+      "publisher": "Microsoft.Compute",
+      "resourceGroup": "alan_bitterman",
+      "settings": {
+        "UserName": "delphix"
+      },
+      "tags": null,
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "typeHandlerVersion": "2.0",
+      "virtualMachineExtensionType": "VMAccessAgent"
+    },
+    {
+      "autoUpgradeMinorVersion": true,
+      "forceUpdateTag": null,
+      "id": "/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Compute/virtualMachines/win1/extensions/SqlIaasExtensio
+n",
+      "instanceView": null,
+      "location": "eastus",
+      "name": "SqlIaasExtension",
+      "protectedSettings": null,
+      "provisioningState": "Succeeded",
+      "publisher": "Microsoft.SqlServer.Management",
+      "resourceGroup": "alan_bitterman",
+      "settings": {
+        "DeploymentTokenSettings": {
+          "DeploymentToken": 2038179245
+        }
+      },
+      "tags": null,
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "typeHandlerVersion": "2.0",
+      "virtualMachineExtensionType": "SqlIaaSAgent"
+    }
+  ],
+  "storageProfile": {
+    "dataDisks": [
+      {
+        "caching": "ReadOnly",
+        "createOption": "Empty",
+        "diskIopsReadWrite": null,
+        "diskMbpsReadWrite": null,
+        "diskSizeGb": 1023,
+        "image": null,
+        "lun": 0,
+        "managedDisk": null,
+        "name": "win1-disk-1",
+        "toBeDetached": false,
+        "vhd": {
+          "uri": "https://alanbittermandisks254.blob.core.windows.net/vhds/win1-disk-1-20180827222020.vhd"
+        },
+        "writeAcceleratorEnabled": null
+      }
+    ],
+    "imageReference": {
+      "exactVersion": "13.1.900310",
+      "id": null,
+      "offer": "SQL2016SP2-WS2016",
+      "publisher": "MicrosoftSQLServer",
+      "sku": "SQLDEV",
+      "version": "latest"
+    },
+    "osDisk": {
+      "caching": "ReadWrite",
+      "createOption": "FromImage",
+      "diffDiskSettings": null,
+      "diskSizeGb": 127,
+      "encryptionSettings": null,
+      "image": null,
+      "managedDisk": null,
+      "name": "win1",
+      "osType": "Windows",
+      "vhd": {
+        "uri": "https://alanbittermandisks254.blob.core.windows.net/vhds/win120180827222020.vhd"
+      },
+      "writeAcceleratorEnabled": null
+    }
+  },
+  "tags": null,
+  "type": "Microsoft.Compute/virtualMachines",
+  "virtualMachineScaleSet": null,
+  "vmId": "b240ca93-a8c7-4373-a5a6-26a10055bafd",
+  "zones": null
+}
+
+PS C:\Users\bitterman> 
+
+az vm show --name TutorialVM1 --resource-group alan_bitterman --query 'networkProfile.networkInterfaces[].id' --output tsv
+
+/subscriptions/1505c25b-d63a-40d8-8b91-f9272afd9648/resourceGroups/alan_bitterman/providers/Microsoft.Network/networkInterfaces/TutorialVM1VMNic
+
+
+
+
+# Stop the VM
+az vm stop --resource-group alan_bitterman --name TutorialVM1 
+az vm stop -g alan_bitterman -n TutorialVM1 --skip-shutdown
+
+# Delete the VM
+az vm delete -g alan_bitterman -n TutorialVM1 --yes 
+
+----
+
+
+\"Set-Alias pslocal64 C:/Windows/SysWOW64/WindowsPowerShell/v1.0/powershell.exe 
+pslocal64 ./hook.ps1; \"
+ {
+                "type": "RunPowerShellOnSourceOperation",
+                "command": "Set-Alias pslocal64 C:/Windows/SysWOW64/WindowsPowerShell/v1.0/powershell.exe \npslocal64 . .\\hook.ps1"
+            }
+
+
+C:\Program Files\Delphix\DelphixConnector\connector
+
+=== POST /resources/json/delphix/database/provision ===
+{
+    "type": "MSSqlProvisionParameters",
+    "container": {
+        "type": "MSSqlDatabaseContainer",
+        "name": "Vdelphix_demo_O9V",
+        "group": "GROUP-2",
+        "sourcingPolicy": {
+            "type": "SourcingPolicy",
+            "logsyncEnabled": false
+        }
+    },
+    "source": {
+        "type": "MSSqlVirtualSource",
+        "name": "Vdelphix_demo_O9V",
+        "operations": {
+            "type": "VirtualSourceOperations",
+            "configureClone": [],
+            "preRefresh": [],
+            "postRefresh": [
+                {
+                    "type": "RunPowerShellOnSourceOperation",
+                    "name": "hookme",
+                    "command": "Set-Alias pslocal64 C:/Windows/SysWOW64/WindowsPowerShell/v1.0/powershell.exe \npxlocal64 ./hook.ps1"
+                }
+            ],
+            "preRollback": [],
+            "postRollback": [],
+            "preSnapshot": [],
+            "postSnapshot": [],
+            "preStart": [],
+            "postStart": [],
+            "preStop": [],
+            "postStop": []
+        },
+        "allowAutoVDBRestartOnHostReboot": true
+    },
+    "sourceConfig": {
+        "type": "MSSqlSIConfig",
+        "linkingEnabled": false,
+        "repository": "MSSQL_INSTANCE-1",
+        "databaseName": "Vdelphix_demo_O9V",
+        "recoveryModel": "SIMPLE",
+        "mirroringState": "NONE"
+    },
+    "timeflowPointParameters": {
+        "type": "TimeflowPointSemantic",
+        "container": "MSSQL_DB_CONTAINER-1"
+    },
+    "masked": false
+}
+=== RESPONSE ===
+{
+    "type": "OKResult",
+    "status": "OK",
+    "result": "MSSQL_DB_CONTAINER-19",
+    "job": "JOB-234",
+    "action": "ACTION-100109"
+}
+=== END ===
