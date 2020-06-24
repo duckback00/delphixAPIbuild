@@ -235,13 +235,13 @@ Write-Output "Create JetStream Template ${JS_TEMPLATE} with Data Source DB ${DS_
 Write-Output "${nl}Create Template API ...${nl}"
 #$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
 $results = Invoke-RestMethod -URI "${BaseURL}/jetstream/template" -WebSession $session -Method Post -Body $json -ContentType 'application/json'
-$status = ParseStatus $results "${ignore}"
+#$status = ParseStatus $results "${ignore}"
 Write-Output "JetStream Template Creation Results: ${results}"
 
 ############## E O F ####################################
 ## Clean up and Done ...
 
-Remove-Variable -Name * -ErrorAction SilentlyContinue
+##Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " "
 Write-Output "Done ..."
 Write-Output " "

@@ -1,0 +1,41 @@
+
+#trigger:
+#- master
+trigger: none
+
+variables:
+  - name: DB
+    value: "delphix_demo"
+  - name: VDB
+    value: "vdelphix_demo"
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+stages:
+
+- stage: DeleteDelphix
+  jobs:
+  - job: DeleteDelphixObjects
+    steps:
+      - task: PowerShell@2
+        inputs:
+          targetType: 'filePath'
+          filePath: '$(System.DefaultWorkingDirectory)//build.ps1'
+          arguments: "-ACTION \"delete\""
+  
+
+- stage: DeleteVM
+  jobs:
+  - job: DeleteVMJob
+    steps:
+     - script: echo Delete VM Job
+#    - task: AzureCLI@2
+#      displayName: Azure CLI
+#      inputs:
+#        azureSubscription: amb
+#        scriptType: ps
+#        scriptLocation: inlineScript
+#        inlineScript: |
+#          az --version
+#          #az vm delete --resource-group alan_bitterman --name vmCorey --yes

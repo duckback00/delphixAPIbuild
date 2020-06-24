@@ -1,5 +1,5 @@
 README.txt
-v1.1
+v1.2
 
 ** So you want to work with the Delphix APIs? **
 
@@ -34,17 +34,6 @@ DMPASS=delphix
 
 Appendix
 --------
-
-Technical NOTE: Powershell Open Source is now available for Linux and Mac OS.
-https://techcrunch.com/2016/08/18/microsoft-open-sources-powershell-brings-it-tolinux-and-os-x/
-
-
-Windows	PowerShell
-==================
-
-
-Requirements 
-============
 
 
 PowerShell Version 
@@ -117,95 +106,6 @@ PS>
 
 Now your shell scripts will be executed.
 
-
-----------------------------------------------------------------------------------------------------
-
-
-curl.exe
---------
-
-NOTE:
-Not all Windows platforms have the cURL executable installed. 
-
-
-METHOD 1: Install the git+ client for Windows	
----------------------------------------------
-
-https://git-for-windows.github.io/
-The Git install includes, among other things, curl.exe. After installing, the /mingw64/bin will be added to your PATH. Then you will be able to use the curl command from the Windows Command Prompt or PowerShell console.
-
-PS> which curl.exe
-/mingw64/bin/curl
-
-PS> curl.exe --version
-curl 7.49.1 (x86_64-w64-mingw32) libcurl/7.49.1 OpenSSL/1.0.2h zlib/1.2.8
-libidn/1.32 libssh2/1.7.0 nghttp2/1.12.0 librtmp/2.3
-Protocols: dict file ftp ftps gopher http https imap imaps ldap ldaps pop3 pop3s
-rtmp rtsp scp sftp smtp smtps telnet tftp
-Features: IDN IPv6 Largefile SSPI Kerberos SPNEGO NTLM SSL libz TLS-SRP HTTP2
-
-
-METHOD 2: Download the curl.exe binary executable and copy it to the Windows directory
---------------------------------------------------------------------------------------
-
-========================= curl.exe executable download =========================
-
-https://curl.haxx.se/dlwiz/
-Click on "curl executable" link
-Select Operating System: 					Win64  		Select! 
-Select for What Flavour: 					Generic  	Select!
-Select which Win64 Version: Show package for Win64 version: 	Any  		Select!
-Select for What CPU: Show package for Win64 version: 		x_86_64  	Select!
-
-Select latest stable version with SSH enabled 
-The latest stable version available (7.56.1)!
-
-curl version: 7.56.1 - SSL enabled SSH enabled   [ Download ]  
-
-To install:
-1.) Download the .zip file from the website steps shown above.
-
-2.) Copy .zip file to computer
-
-3.) Either add the path below to the default system PATH environment variable   
-
-[full_path_to]\curl-7.56.1-win64-mingw\bin 
-... or ...
-copy the contents of the \bin directory, curl.exe, *.crt and libcurl-x64.dll, to the Windows\System32 directory
-
-4.) From Powershell, type the following command
-
-PS> curl.exe --version
-curl 7.56.1 ... [ more version info to follow ]
-
-
-
-----------------------------------------------------------------------------------------------------
-
-
-Invoking the curl or curl.exe from Powershell command line.
-
-PS> Get-Command curl
-CommandType Name ModuleName
------------ ---- ----------
-Alias curl -> Invoke-WebRequest
-
-PS> Get-Command curl.exe
-CommandType Name ModuleName
------------ ---- ----------
-Application curl.exe
-
-If the alias curl name is to the Invoke-WebRequest, you will need to use the curl.exe command explicitly or remove the alias.
-
-PS> Remove-item alias:curl
-
-Verify that curl and/or curl.exe work from the respective Powershell environment:
-
-PS> curl.exe --version
-curl 7.49.1 (x86_64-w64-mingw32) ...
-
-PS> curl --version
-curl 7.49.1 (x86_64-w64-mingw32) ...
 
 
 ----------------------------------------------------------------------------------------------------

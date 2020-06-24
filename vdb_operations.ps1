@@ -264,7 +264,7 @@ Monitor_JOB "$BaseURL" $session "$CONTENT_TYPE" "$JOB"
 ############## E O F ####################################
 ## Clean up and Done ...
 
-Remove-Variable -Name * -ErrorAction SilentlyContinue
+##Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " "
 Write-Output "Done ..."
 Write-Output " "

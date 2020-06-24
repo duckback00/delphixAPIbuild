@@ -340,14 +340,8 @@ $json = @"
         \"allowAutoVDBRestartOnHostReboot\": false, 
         \"operations\": {
             \"type\": \"VirtualSourceOperations\",
-            \"configureClone\": [ { 
-                \"type\": \"RunPowerShellOnSourceOperation\",
-                \"name\": \"hookme4\", 
-                \"command\": \"Set-Alias pslocal64 C:/Windows/SysWOW64/WindowsPowerShell/v1.0/powershell.exe \npslocal64 . .\\hook.ps1\"} ],
-            \"postRefresh\": [ { 
-                \"type\": \"RunPowerShellOnSourceOperation\",
-                \"name\": \"hookme4\", 
-                \"command\": \"Set-Alias pslocal64 C:/Windows/SysWOW64/WindowsPowerShell/v1.0/powershell.exe \npslocal64 . .\\hook.ps1\"} ],
+            \"configureClone\": [],
+            \"postRefresh\": [],
             \"postRollback\": [],
             \"postSnapshot\": [],
             \"preRefresh\": [],
@@ -401,7 +395,7 @@ Monitor_JOB "$BaseURL" $session "$CONTENT_TYPE" "$JOB"
 ############## E O F ####################################
 ## Clean up and Done ...
 
-##Remove-Variable -Name * -ErrorAction SilentlyContinue
+Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " "
 Write-Output "Done ..."
 Write-Output " "

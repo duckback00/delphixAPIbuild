@@ -1,0 +1,14 @@
+trigger: none
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+steps:
+  - task: AzureCLI@2
+    displayName: Azure CLI
+    inputs:
+      azureSubscription: amb
+      scriptType: ps
+      scriptLocation: inlineScript
+      inlineScript: |
+        az vm delete --resource-group alan_bitterman --name "vmCorey20200618.1" --yes

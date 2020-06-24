@@ -256,7 +256,7 @@ if ("${ACTION}" -eq "status") {
 ############## E O F ####################################
 ## Clean up and Done ...
 
-Remove-Variable -Name * -ErrorAction SilentlyContinue
+##Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " "
 Write-Output "Done ..."
 Write-Output " "

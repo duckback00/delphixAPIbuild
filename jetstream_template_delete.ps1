@@ -80,7 +80,7 @@ $DEF_ACTION=""
 ## Authentication ...
 
 Write-Output "Authenticating on ${BaseURL} ... ${nl}"
-$results=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT_TYPE}" 
+$session=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT_TYPE}" 
 #Write-Output "${nl} Results are ${results} ..."
 
 Write-Output "Login Successful ..."
@@ -89,15 +89,16 @@ Write-Output "Login Successful ..."
 ## Get Template Reference ...
 
 #Write-Output "${nl}Calling Jetstream Template API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/template"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Database API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.name -eq "${JS_TEMPLATE}" -and $_.type -eq "JSDataTemplate"} | Select-Object
 $JS_TPL_CHK=$b.name
 #Write-Output "$JS_TEMPLATE ... chk ... $JS_TPL_CHK"
@@ -176,14 +177,15 @@ $json=@"
 "@
 
 # Write-Output "${nl}Delete Template API ...${nl}"
-$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/template/${JS_TPL_REF}/delete -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/template/${JS_TPL_REF}/delete -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
+$results = Invoke-RestMethod -URI "${BaseURL}/jetstream/template/${JS_TPL_REF}/delete" -WebSession $session -Method Post -Body $json -ContentType 'application/json'
+$status = ParseStatus $results "${ignore}"
 Write-Output "${ACTION} template API Results: ${results}"
 
 ############## E O F ####################################
 ## Clean up and Done ...
 
-Remove-Variable -Name * -ErrorAction SilentlyContinue
+##Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " " 
 Write-Output "Done ... (no job required for this action)"
 Write-Output " "

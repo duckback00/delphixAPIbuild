@@ -1,0 +1,62 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+#trigger:
+#- master
+
+variables:
+  - name: DB
+    value: "delphix_demo"
+  - name: VDB
+    value: "vdelphix_demo"
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+stages:
+- stage: BuildVM
+  jobs:
+  - job: BuildVMJob
+    steps:
+     - script: echo Build VM Job
+#    - task: AzureCLI@2
+#      displayName: Azure CLI
+#      inputs:
+#        azureSubscription: amb
+#        scriptType: ps
+#        scriptLocation: inlineScript
+#        inlineScript: |
+#          az --version
+#          az account show
+#          #az vm create --resource-group alan_bitterman --name vmCorey$(Build.BuildNumber) --image UbuntuLTS --admin-username corey  --generate-ssh-keys
+
+
+- stage: BuildDelphix
+  jobs:
+  - job: TestOnWindows
+    steps:
+      - task: PowerShell@2
+        inputs:
+          targetType: 'filePath'
+          filePath: '$(System.DefaultWorkingDirectory)//build.ps1'
+          arguments: "-ACTION \"create\""
+  
+- stage: PerformTest
+  jobs:
+  - job: BuildJob2
+    steps:
+    - script: echo Running!  
+  - job: TestOnVM
+    steps:
+    - script: echo Testing Code goes Here!
+
+- stage: ApprovaltoDeploy
+  jobs:
+  - job: BuildJob3
+    steps:
+    - script: echo Running!  
+  - job: DeployArtifacts
+    steps:
+    - script: echo Deploying Artifacts!

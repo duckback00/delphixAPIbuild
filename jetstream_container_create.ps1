@@ -40,8 +40,8 @@
 param (
     [string]$JS_TEMPLATE = "",
     [string]$JS_DS_NAME = "",
-    [string]$JS_DC_NAME = "",
-    [string]$DS_NAME = ""
+    [string]$DS_NAME = "",
+    [string]$JS_DC_NAME = ""
 )
 
 #########################################################
@@ -83,6 +83,12 @@ $session=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT
 #Write-Output "${nl} Results are ${results} ..."
 
 Write-Output "Login Successful ..."
+
+#########################################################
+## API Version ...
+
+$apival=Get_APIVAL "${BaseURL}" $session "${CONTENT_TYPE}" 
+Write-Output "API Version: ${apival} "
 
 #########################################################
 ## Get Template Reference ...
@@ -198,7 +204,8 @@ Write-Output "JetStream data source parent container: ${JS_DS_REF}"
 #$results = (curl.exe --insecure -sX GET -k ${BaseURL}/database -b "${COOKIE}" -H "${CONTENT_TYPE}")
 $results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/database"
 $status = ParseStatus $results "${ignore}"
-#Write-Output "Database API Results: ${results}"
+Write-Output "Database API Results: "
+##$results.result
 
 #
 # Convert Results String to JSON Object and Get Results ...
@@ -207,7 +214,7 @@ $status = ParseStatus $results "${ignore}"
 $a = $results.result
 $b = $a | where { $_.provisionContainer -eq "${JS_DS_REF}" } | Select-Object
 $DS_NAME_REFS=$b.reference
-#Write-Output "DS_NAME_REFS: ${DS_NAME_REFS}"
+Write-Output "DS_NAME_REFS: ${DS_NAME_REFS}"
 
 if ( "${DS_NAME}" -eq "" ) {
    $ZTMP="Data Source Name"
@@ -264,30 +271,26 @@ if ( "${JS_DC_NAME}" -eq "" ) {
 Write-Output "jetstream container name: ${JS_DC_NAME}"
 
 #########################################################
-## TODO ## Validate Data Container Object/Names are not already used ...
+## TODO 
 
-#
-# Type Option for API version 190 or later
-# Faster Container Creations ...
-#
-#{
-#	"template":"JS_DATA_TEMPLATE-8"
-#	,"owners":["USER-2"]
-#	,"name":"dc"
-#	,"dataSources":[{
-#		"source":{"priority":1,"name":"ds","type":"JSDataSource"}
-#	   ,"container":"ORACLE_DB_CONTAINER-37"
-#	   ,"type":"JSDataSourceCreateParameters"
-#	 }]
-#	 ,"properties":{}
-#	,"type":"JSDataContainerCreateWithoutRefreshParameters"
-#}
-# NOTICE: no timelinePointParameters name: values
+## Validate Data Container Object/Names are not already used ...
 
 #########################################################
-## Creating a JetStream Container from an Oracle Database ...
+## Creating a JetStream Container from a Database ...
 
-$json=@"
+#
+# To Do ... 
+# 1. Assign Owners 
+#	,\"owners ":["USER-2"]
+#
+
+#echo "$apival ... 190"
+if ( [Int]$apival -lt 190 ) {
+
+   # 
+   # Refersh Container ... see type With
+   #
+   $json=@"
 {
      \"type\": \"JSDataContainerCreateWithRefreshParameters\",
      \"dataSources\": [
@@ -309,6 +312,34 @@ $json=@"
      }
 }
 "@
+
+} else {
+
+   #
+   # Type Option for API version 190 or later
+   # Faster Container Creations ... see type Without
+   #   
+   $json=@"
+{
+	\"type\": \"JSDataContainerCreateWithoutRefreshParameters\"
+	,\"template\": \"${JS_TPL_REF}\"
+	,\"name\": \"${JS_DC_NAME}\"
+	,\"dataSources\": [{
+	    \"type\": \"JSDataSourceCreateParameters\"
+	   ,\"source\": { 
+	       \"type\": \"JSDataSource\"
+		  ,\"priority\": 1 
+		  ,\"name\": \"${DS_NAME}\"
+	   }
+	   ,\"container\": \"${DS_NAME_REF}\"
+	 }]
+	 ,\"properties\": {}
+}
+"@
+
+   # NOTICE: no timelinePointParameters name: values
+
+}     # end if $apival ...
 
 $json = $json -replace '\\"', '"'
 Write-Output "JSON: ${json}"
@@ -336,7 +367,7 @@ Monitor_JOB "$BaseURL" $session "$CONTENT_TYPE" "$JOB"
 ############## E O F ####################################
 ## Clean up and Done ...
 
-Remove-Variable -Name * -ErrorAction SilentlyContinue
+##Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " "
 Write-Output "Done ..."
 Write-Output " "

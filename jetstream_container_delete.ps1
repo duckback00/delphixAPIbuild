@@ -86,7 +86,7 @@ $DEF_DEL_DS=""
 ## Authentication ...
 
 Write-Output "Authenticating on ${BaseURL} ... ${nl}"
-$results=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT_TYPE}" 
+$session=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT_TYPE}" 
 #Write-Output "${nl} Results are ${results} ..."
 
 Write-Output "Login Successful ..."
@@ -95,15 +95,16 @@ Write-Output "Login Successful ..."
 ## Get Template Reference ...
 
 #Write-Output "${nl}Calling Jetstream Template API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/template"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Database API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.name -eq "${JS_TEMPLATE}" -and $_.type -eq "JSDataTemplate"} | Select-Object
 $JS_TPL_CHK=$b.name
 #Write-Output "$JS_TEMPLATE ... chk ... $JS_TPL_CHK"
@@ -143,15 +144,16 @@ if ( "${JS_TPL_REF}" -eq "" ) {
 ## Get container reference...
 
 #Write-Output "${nl}Jetstream Container API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/container -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/container -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/container"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Container API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.template -eq "${JS_TPL_REF}" -and $_.type -eq "JSDataContainer"} | Select-Object
 
 if ( "${JS_CONTAINER_NAME}" -eq "" ) {
@@ -245,18 +247,20 @@ $json=@"
 }
 "@
 
+$json = $json -replace '\\"', '"'
 Write-Output "JSON: ${json}"
 
 Write-Output "Delete Container ${JS_CONTAINER_NAME} reference ${JS_CONTAINER_REF} ..."
-$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/container/${JS_CONTAINER_REF}/delete -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
-$status = ParseStatus "${results}" "${ignore}"
-Write-Output "Delete Container Results: ${results}"
+#$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/container/${JS_CONTAINER_REF}/delete -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
+$results = Invoke-RestMethod -URI "${BaseURL}/jetstream/container/${JS_CONTAINER_REF}/delete" -WebSession $session -Method Post -Body $json -ContentType 'application/json'
+$status = ParseStatus $results "${ignore}"
+#Write-Output "Delete Container Results: ${results}"
 
 #########################################################
 ## Job ...
 
-$o = ConvertFrom-Json $results
-$JOB=$o.job
+#$o = ConvertFrom-Json $results
+$JOB=$results.job
 Write-Output "Job # $JOB ${nl}"
 
 # 
@@ -264,12 +268,12 @@ Write-Output "Job # $JOB ${nl}"
 #
 sleep 1
 
-Monitor_JOB "$BaseURL" "$COOKIE" "$CONTENT_TYPE" "$JOB"
+Monitor_JOB "$BaseURL" $session "$CONTENT_TYPE" "$JOB"
 
 ############## E O F ####################################
 ## Clean up and Done ...
 
-Remove-Variable -Name * -ErrorAction SilentlyContinue
+#Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " "
 Write-Output "Done ..."
 Write-Output " "

@@ -94,7 +94,8 @@ $json = @"
 Write-Output "JSON: $json"
 
 Write-Output "Calling Create Environment API ..."
-$results = (curl.exe -sX POST -k ${BaseURL}/environment -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
+##$results = (curl.exe -sX POST -k ${BaseURL}/environment -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
+$results = Invoke-RestMethod -Method POST -body "${json}" -ContentType "application/json" -WebSession $session -URI "${BaseURL}/environment"
 Write-Output "Environment API Results: ${results}"
 
 ############## E O F ####################################

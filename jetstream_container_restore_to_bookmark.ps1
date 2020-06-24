@@ -80,24 +80,32 @@ $DEF_JS_BOOK_NAME=""
 ## Authentication ...
 
 Write-Output "Authenticating on ${BaseURL} ... ${nl}"
-$results=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT_TYPE}" 
+$session=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT_TYPE}"  
 #Write-Output "${nl} Results are ${results} ..."
 
 Write-Output "Login Successful ..."
 
 #########################################################
+## System Information ...
+
+echo "Gathering System Information ..."
+$APIVAL=Get_APIVAL  "${BaseURL}" $session "${CONTENT_TYPE}" 
+echo "Delphix API Version: ${APIVAL} "
+
+#########################################################
 ## Get Template Reference ...
 
 #Write-Output "${nl}Calling Jetstream Template API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/template"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Database API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.name -eq "${JS_TEMPLATE}" -and $_.type -eq "JSDataTemplate"} | Select-Object
 $JS_TPL_CHK=$b.name
 #Write-Output "$JS_TEMPLATE ... chk ... $JS_TPL_CHK"
@@ -137,15 +145,16 @@ if ( "${JS_TPL_REF}" -eq "" ) {
 ## Get container reference...
 
 #Write-Output "${nl}Jetstream Container API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/container -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/container -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/container"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Container API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.template -eq "${JS_TPL_REF}" -and $_.type -eq "JSDataContainer"} | Select-Object
 
 if ( "${JS_CONTAINER_NAME}" -eq "" ) {
@@ -184,15 +193,16 @@ Write-Output "Container Active Branch Reference: ${JS_DC_ACTIVE_BRANCH}"
 ## Get Active Branch Reference ...
 
 #Write-Output "${nl}Jetstream Branch API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/branch/${JS_DC_ACTIVE_BRANCH} -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/branch/${JS_DC_ACTIVE_BRANCH} -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/branch/${JS_DC_ACTIVE_BRANCH}"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Branch API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $ACTIVE_BRANCH_NAME=$a.name
 Write-Output "Active Branch Name: ${ACTIVE_BRANCH_NAME}"
 
@@ -212,15 +222,16 @@ Write-Output "Active Branch reference: ${JS_BRANCH_REF}"
 ## Get BookMarks per Branch Option ...
 
 #Write-Output "${nl}Jetstream Bookmark API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/bookmark -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/bookmark -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/bookmark"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Bookmark API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.container -eq "${JS_CONTAINER_REF}" -and $_.branch -eq "${JS_BRANCH_REF}" -and $_.type -eq "JSBookmark" } | Select-Object
 #TMP=`echo ${STATUS} | jq --raw-output '.result[] | select(.container=="'"${JS_CONTAINER_REF}"'" and .branch=="'"${JS_BRANCH_REF}"'") | .name '`
 
@@ -263,38 +274,50 @@ echo "Bookmark Reference: ${JS_BOOK_REF}"
 #########################################################
 ## Container Restore to Bookmark ...
 
-#
-# v1.9.0
-#json="
-#{
-#    \"type\": \"JSDataContainerRestoreParameters\",
-#    \"timelinePointParameters\": {
-#        \"type\": \"JSTimelinePointBookmarkInput\",
-#        \"bookmark\": \"${JS_BOOK_REF}\"
-#    },
-#    \"forceOption\": false
-#}"
-
 # === POST /resources/json/delphix/jetstream/container/JS_DATA_CONTAINER-1/restore ===
-$json=@"
+
+#echo "$APIVAL ... 190"
+if ( [Int]$APIVAL -lt 190 ) {
+
+   $json=@"
 {
     \"type\": \"JSTimelinePointBookmarkInput\",
     \"bookmark\": \"${JS_BOOK_REF}\"
 }
 "@
 
+} else {
+
+   $json=@"
+{   
+    \"type\": \"JSDataContainerRestoreParameters\",
+    \"timelinePointParameters\": {
+        \"type\": \"JSTimelinePointBookmarkInput\",
+        \"bookmark\": \"${JS_BOOK_REF}\"
+    },
+    \"forceOption\": false
+}
+"@
+
+}  # end if apival ...
+
+
+$json = $json -replace '\\"', '"'
 Write-Output "JSON: ${json}"
 
 Write-Output "Container Restore to Bookmark ${JS_BOOK_NAME} ..."
-$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/container/${JS_CONTAINER_REF}/restore -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/container/${JS_CONTAINER_REF}/restore -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
+$results = Invoke-RestMethod -URI "${BaseURL}/jetstream/container/${JS_CONTAINER_REF}/restore" -WebSession $session -Method Post -Body $json -ContentType 'application/json'
+$results.error
+$results.error.details
+$status = ParseStatus $results "${ignore}"
 Write-Output "Container Restore to Bookmark Job Results: ${results}"
 
 #########################################################
 ## Job ...
 
-$o = ConvertFrom-Json $results
-$JOB=$o.job
+#$o = ConvertFrom-Json $results
+$JOB=$results.job
 Write-Output "Job # $JOB ${nl}"
 
 # 
@@ -302,12 +325,12 @@ Write-Output "Job # $JOB ${nl}"
 #
 sleep 1
 
-Monitor_JOB "$BaseURL" "$COOKIE" "$CONTENT_TYPE" "$JOB"
+Monitor_JOB "$BaseURL" $session "$CONTENT_TYPE" "$JOB"
 
 ############## E O F ####################################
 ## Clean up and Done ...
 
-Remove-Variable -Name * -ErrorAction SilentlyContinue
+##Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " "
 Write-Output "Done ..."
 Write-Output " "

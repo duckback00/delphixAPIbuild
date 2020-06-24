@@ -1,0 +1,23 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+#trigger:
+#- master
+
+jobs:
+  # track deployments on the environment
+- deployment: DeployVM
+  displayName: deploy VM
+  pool:
+    vmImage: 'vs2017-win2016'
+  # creates an environment if it doesn't exist
+  environment: 'delphix_dev'
+  strategy:
+    # default deployment strategy, more coming...
+    runOnce:
+      deploy:
+        steps:
+        - script: echo my first deployment
+

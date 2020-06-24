@@ -20,7 +20,7 @@
 # Version      : v1.0.0
 #
 # Requirements :
-#  1.) curl command line executable and ConvertFrom-Json Commandlet
+#  1.) Powershell 3.0 or later
 #  2.) Populate Delphix Engine Connection Information . .\delphix_engine_conf.ps1
 #  3.) Include Delphix Functions . .\delphixFunctions.ps1
 #  4.) Change values below as required
@@ -95,15 +95,16 @@ Write-Output "Login Successful ..."
 ## Get Template Reference ...
 
 #Write-Output "${nl}Calling Jetstream Template API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+##$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/template"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Database API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.name -eq "${JS_TEMPLATE}" -and $_.type -eq "JSDataTemplate"} | Select-Object
 $JS_TPL_CHK=$b.name
 #Write-Output "$JS_TEMPLATE ... chk ... $JS_TPL_CHK"
@@ -143,15 +144,16 @@ if ( "${JS_TPL_REF}" -eq "" ) {
 ## Get container reference...
 
 #Write-Output "${nl}Jetstream Container API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/container -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+##$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/container -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/container"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Container API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+# $o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.template -eq "${JS_TPL_REF}" -and $_.type -eq "JSDataContainer"} | Select-Object
 
 if ( "${JS_CONTAINER_NAME}" -eq "" ) {
@@ -190,15 +192,16 @@ Write-Output "Container Active Branch Reference: ${JS_DC_ACTIVE_BRANCH}"
 ## Get Branch Reference ...
 
 #Write-Output "${nl}Jetstream Branch Reference API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/branch -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/branch -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/branch"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Branch API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+#$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.reference -eq "${JS_DC_ACTIVE_BRANCH}" -and $_.name -ne "master" -and $_.type -eq "JSBranch"} | Select-Object
 $JS_DAB_NAME=$b.name
 #`echo "${STATUS}" | jq --raw-output '.result[] | select (.reference=="'"${JS_DC_ACTIVE_BRANCH}"'") | .name '`
@@ -241,15 +244,16 @@ if ( "${JS_BRANCH_REF}" -eq "" ) {
 ## Get BookMarks per Branch Option ...
 
 #Write-Output "${nl}Jetstream Bookmark Reference API ...${nl}"
-$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/bookmark -b "${COOKIE}" -H "${CONTENT_TYPE}")
-$status = ParseStatus "${results}" "${ignore}"
+##$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/bookmark -b "${COOKIE}" -H "${CONTENT_TYPE}")
+$results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/bookmark"
+$status = ParseStatus $results "${ignore}"
 #Write-Output "Bookmark API Results: ${results}"
 
 #
 # Convert Results String to JSON Object and Get Results ...
 #
-$o = ConvertFrom-Json $results
-$a = $o.result
+##$o = ConvertFrom-Json $results
+$a = $results.result
 $b = $a | where { $_.container -eq "${JS_CONTAINER_REF}" -and $_.branch -eq "${JS_BRANCH_REF}" -and $_.type -eq "JSBookmark"} | Select-Object
 
 #$TMP=`echo ${STATUS} | jq --raw-output '.result[] | select(.container=="'"${JS_CONTAINER_REF}"'" and .branch=="'"${JS_BRANCH_REF}"'") | .name '`
@@ -336,15 +340,16 @@ $json=@"
 #Write-Output "JSON: ${json}"
 
 Write-Output "Delete Bookmark ${JS_BOOK_NAME} reference ${JS_BOOK_REF} ..."
-$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/bookmark/${JS_BOOK_REF}/delete -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
-$status = ParseStatus "${results}" "${ignore}"
+##$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/bookmark/${JS_BOOK_REF}/delete -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
+$results = Invoke-RestMethod -URI "${BaseURL}/jetstream/bookmark/${JS_BOOK_REF}/delete" -WebSession $session -Method Post -Body $json -ContentType 'application/json'
+$status = ParseStatus $results "${ignore}"
 Write-Output "Delete Bookmark Results: ${results}"
 
 #########################################################
 ## Job ...
 
-$o = ConvertFrom-Json $results
-$JOB=$o.job
+#$o = ConvertFrom-Json $results
+$JOB=$results.job
 Write-Output "Job # $JOB ${nl}"
 
 # 

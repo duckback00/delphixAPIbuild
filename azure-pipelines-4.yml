@@ -1,0 +1,25 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+#trigger:
+#- master
+trigger: none
+
+variables:
+  - name: DB
+    value: "delphix_demo"
+  - name: VDB
+    value: "vdelphix_demo"
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+steps:
+
+- task: PowerShell@2
+  inputs:
+    targetType: 'filePath'
+    filePath: '$(System.DefaultWorkingDirectory)//build.ps1'
+    arguments: "-ACTION \"restore\""

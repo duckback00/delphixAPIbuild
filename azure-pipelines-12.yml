@@ -1,0 +1,20 @@
+trigger: none
+
+variables:
+  - name: DB
+    value: "delphix_demo"
+  - name: VDB
+    value: "vdelphix_demo"
+
+pool:
+  vmImage: 'VS2017-Win2016'
+
+steps: 
+
+- task: AzurePowerShell@5
+  inputs:
+    azureSubscription: amb
+    azurePowerShellVersion: latestVersion
+    scriptType: 'filePath'
+    scriptPath: '$(System.DefaultWorkingDirectory)//vmclone2.ps1'
+    scriptArguments: ""

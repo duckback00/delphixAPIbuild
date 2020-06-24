@@ -13,31 +13,31 @@
 #
 # Copyright (c) 2017 by Delphix. All rights reserved.
 #
-# Program Name : jetstream_bookmark_create_from_timestamp.ps1
-# Description  : Delphix API to create a JetStream Bookmark in Active Branch from Timestamp
+# Program Name : jetstream_bookmark_create_from_latest.ps1
+# Description  : Delphix API to create a JetStream Bookmark in Active Branch
 # Author       : Alan Bitterman
 # Created      : 2017-11-20
 # Version      : v1.2
 #
 # Requirements :
-#  1.) curl command line executable and ConvertFrom-Json Commandlet
+#  1.) Powershell 3.0 or later
 #  2.) Populate Delphix Engine Connection Information . .\delphix_engine_conf.ps1
 #  3.) Include Delphix Functions . .\delphixFunctions.ps1
 #  4.) Change values below as required
 #
 # Interactive Usage: 
-# ./jetstream_bookmark_create_from_timestamp.ps1
+# ./jetstream_bookmark_create.ps1
 #
 # Non-interactive Usage:
-# ./jetstream_bookmark_create_from_timestamp.ps1 [template_name] [container_name] [bookmark_name]    SHARED         TAGS       Timestamp
-# ./jetstream_bookmark_create_from_timestamp.ps1 [template_name] [container_name] [bookmark_name] [true|false] ["tag1","tag2"] [YYYY-MM-DDTHH:MI:SS.FFFZ]
+# ./jetstream_bookmark_create_from_latest.ps1 [template_name] [container_name] [bookmark_name]    SHARED         TAGS
+# ./jetstream_bookmark_create_from_latest.ps1 [template_name] [container_name] [bookmark_name] [true|false] ["tag1","tag2"] 
 #
 # Tags are arrays and must be "quoted" if more than one and delimited by a comma
 # 
-# ./jetstream_bookmark_create.ps1 tpl dc BM3 false '"Hey","There"'
+# ./jetstream_bookmark_create_from_latest.ps1 tpl dc BM3 false '"Hey","There"'
 #
 # Non-interactive using hardcode defaults iff set: 
-# ./jetstream_bookmark_create.ps1 [template_name] [container_name] 
+# ./jetstream_bookmark_create_from_latest.ps1 
 #
 #########################################################
 #                   DELPHIX CORP                        #
@@ -53,8 +53,7 @@ param (
     [string]$JS_CONTAINER_NAME = "",
     [string]$JS_BOOK_NAME = "",
     [string]$SHARED = "",
-    [string]$TAGS = "",
-    [string]$TS = ""
+    [string]$TAGS = ""
 )
 
 #########################################################
@@ -72,7 +71,6 @@ param (
 # $DEF_JS_BOOK_NAME="Wally_${DT}"   # JetStream Bookmark Name_append timestamp
 # $DEF_SHARED="false"               # Share Bookmark true/false
 # $DEF_TAGS='"API","Created"'       # Tags Array Values
-# $DEF_TS="2017-12-03T21:11:00.000Z"
 #
 # For full interactive option, set default values to nothing ...
 #
@@ -81,7 +79,6 @@ $DEF_JS_CONTAINER_NAME=""
 $DEF_JS_BOOK_NAME=""
 $DEF_SHARED=""
 $DEF_TAGS=""
-$DEF_TS=""
 
 #########################################################
 #         NO CHANGES REQUIRED BELOW THIS POINT          #
@@ -96,7 +93,7 @@ $DEF_TS=""
 ## Authentication ...
 
 Write-Output "Authenticating on ${BaseURL} ... ${nl}"
-$results=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT_TYPE}" 
+$session=RestSession "${DMUSER}" "${DMPASS}" "${BaseURL}" "${COOKIE}" "${CONTENT_TYPE}" 
 #Write-Output "${nl} Results are ${results} ..."
 
 Write-Output "Login Successful ..."
@@ -105,9 +102,9 @@ Write-Output "Login Successful ..."
 ## Get Template Reference ...
 
 #Write-Output "${nl}Calling Jetstream Template API ...${nl}"
-##$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/template -b "${COOKIE}" -H "${CONTENT_TYPE}")
 $results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/template"
 $status = ParseStatus $results "${ignore}"
+
 #Write-Output "Database API Results: ${results}"
 
 #
@@ -154,7 +151,7 @@ if ( "${JS_TPL_REF}" -eq "" ) {
 ## Get container reference...
 
 #Write-Output "${nl}Jetstream Container API ...${nl}"
-##$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/container -b "${COOKIE}" -H "${CONTENT_TYPE}")
+#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/container -b "${COOKIE}" -H "${CONTENT_TYPE}")
 $results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/container"
 $status = ParseStatus $results "${ignore}"
 #Write-Output "Container API Results: ${results}"
@@ -198,14 +195,11 @@ $JS_DC_ACTIVE_BRANCH=$b.activeBranch
 #`Write-Output "${STATUS}" | jq --raw-output '.result[] | select(.template=="'"${JS_TPL_REF}"'" and .name=="'"${JS_CONTAINER_NAME}"'") | .activeBranch '`
 Write-Output "Container Active Branch Reference: ${JS_DC_ACTIVE_BRANCH}"
 
-$JS_DC_LAST_UPDATED=$b.lastUpdated
-#`Write-Output "${STATUS}" | jq --raw-output '.result[] | select(.template=="'"${JS_TPL_REF}"'" and .name=="'"${JS_CONTAINER_NAME}"'") | .lastUpdated '`
-
 #########################################################
 ## Get Active Branch Reference ...
 
 #Write-Output "${nl}Jetstream Branch API ...${nl}"
-#$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/branch/${JS_DC_ACTIVE_BRANCH} -b "${COOKIE}" -H "${CONTENT_TYPE}")
+##$results = (curl.exe -s -X GET -k ${BaseURL}/jetstream/branch/${JS_DC_ACTIVE_BRANCH} -b "${COOKIE}" -H "${CONTENT_TYPE}")
 $results = Invoke-RestMethod -Method Get -ContentType "application/json" -WebSession $session -URI "${BaseURL}/jetstream/branch/${JS_DC_ACTIVE_BRANCH}"
 $status = ParseStatus $results "${ignore}"
 #Write-Output "Branch API Results: ${results}"
@@ -231,8 +225,6 @@ if ( "${JS_BRANCH_REF}" -eq "" ) {
 
 Write-Output "Active Branch reference: ${JS_BRANCH_REF}"
 
-#Write-Output "${STATUS}" | jq --raw-output '.result[] | select (.reference=="'"${JS_BRANCH_REF}"'")'
-
 #########################################################
 ## Get Remaining Command Line Parameters ...
 
@@ -251,7 +243,6 @@ if ( "${JS_BOOK_NAME}" -eq "" ) {
    }
 }
 
-
 if ( "${SHARED}" -eq "" ) {
    if ( "${DEF_SHARED}" -eq "" ) {
       Write-Output "---------------------------------"
@@ -267,7 +258,6 @@ if ( "${SHARED}" -eq "" ) {
    }
 }
 $SHARED=$SHARED.ToLower()
-
 
 if ( "${TAGS}" -eq "" ) {
    if ( "${DEF_TAGS}" -eq "" ) {  
@@ -291,25 +281,6 @@ if ( "${TAGS}" -eq "" ) {
 }
 
 #
-# Timestamp ...
-#
-if ( "${TS}" -eq "" ) {
-   if ( "${DEF_TS}" -eq "" ) {
-      Write-Output "---------------------------------"
-      Write-Output "Timestamp Format: YYYY-MM-DDTHH:MI:SS.FFFZ"
-      Write-Output "Container Last Updated: ${JS_DC_LAST_UPDATED}"
-      $TS = Read-Host -Prompt "Please Enter Timestamp"
-      if ( "${TS}" -eq "" ) {
-         Write-Output "No Timestamp Name Provided, Exiting ..."
-         exit 1;
-      }
-   } else {
-      Write-Output "No Timestamp Provided, using Default ..."
-      $TS=${DEF_TS}
-   }
-}
-
-#
 # TODO: Validate Command Line Parameter Values ...
 # 
 
@@ -317,8 +288,6 @@ if ( "${TS}" -eq "" ) {
 # 
 # Create Bookmark ...
 #  Change parameters as required and desired :) 
-#
-# Works only for API version 1.8.x or later ..
 #
 $json=@"
 {
@@ -331,9 +300,8 @@ $json=@"
         \"tags\": [ \"${TAGS}\" ]
     },
     \"timelinePointParameters\": {
-        \"type\": \"JSTimelinePointTimeInput\",
-        \"branch\": \"${JS_BRANCH_REF}\",
-        \"time\": \"${TS}\"
+        \"type\": \"JSTimelinePointLatestTimeInput\",
+        \"sourceDataLayout\": \"${JS_CONTAINER_REF}\"
     }
 }
 "@
@@ -342,9 +310,10 @@ $json=@"
 # Note: the timelinePointParameters type JSTimelinePointLatestTimeInput is the last point / latest time in the branch!
 #
 
+$json = $json -replace '\\"', '"'
 Write-Output "JSON: ${json}"
 
-Write-Output "Create Bookmark ${JS_BOOK_NAME} from timestamp ..."
+Write-Output "Create Bookmark ${JS_BOOK_NAME} from latest timestamp ..."
 #$results = (curl.exe -sX POST -k ${BaseURL}/jetstream/bookmark -b "${COOKIE}" -H "${CONTENT_TYPE}" -d "${json}")
 $results = Invoke-RestMethod -URI "${BaseURL}/jetstream/bookmark" -WebSession $session -Method Post -Body $json -ContentType 'application/json'
 $status = ParseStatus $results "${ignore}"
@@ -362,7 +331,7 @@ Write-Output "Job # $JOB ${nl}"
 #
 sleep 1
 
-Monitor_JOB "$BaseURL" "$COOKIE" "$CONTENT_TYPE" "$JOB"
+Monitor_JOB "$BaseURL" $session "$CONTENT_TYPE" "$JOB"
 
 ############## E O F ####################################
 ## Clean up and Done ...
@@ -371,5 +340,4 @@ Remove-Variable -Name * -ErrorAction SilentlyContinue
 Write-Output " "
 Write-Output "Done ..."
 Write-Output " "
-exit 0 
-
+exit 0
